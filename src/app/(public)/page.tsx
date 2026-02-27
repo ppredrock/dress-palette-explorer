@@ -45,33 +45,27 @@ export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-brand-50 via-blush-50 to-white">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand-200/40 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-blush-200/40 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-brand-100/20 blur-3xl" />
-        </div>
-
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-[#FDFAF7]">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="animate-slide-up">
-              <Badge className="mb-6 bg-brand-50 text-brand-600 border-brand-200 hover:bg-brand-50">
+              <Badge className="mb-6" variant="default">
                 <Sparkles className="w-3 h-3 mr-1" /> Welcome to Neha&apos;s Studio
               </Badge>
               <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight mb-6">
                 Dress.{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-blush-500">
+                <span className="text-gradient-gold italic">
                   Glow.
                 </span>{" "}
                 Inspire.
               </h1>
-              <p className="text-xl text-gray-600 leading-relaxed mb-8 max-w-lg">
+              <p className="text-xl text-gray-500 leading-relaxed mb-8 max-w-lg">
                 Curated dress collections, expert makeup artistry, and a lifestyle world that inspires —
                 all in one cozy digital boutique crafted by Neha.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link href="/dresses">
-                  <Button size="lg" className="gap-2 shadow-lg shadow-brand-200">
+                  <Button size="lg" className="gap-2">
                     <ShoppingBag className="w-5 h-5" />
                     Browse Dresses
                   </Button>
@@ -85,7 +79,7 @@ export default function HomePage() {
               </div>
 
               {/* Stats */}
-              <div className="flex gap-8 mt-12 pt-8 border-t border-gray-100">
+              <div className="flex gap-8 mt-12 pt-8 border-t border-[#E8D5C8]">
                 {[
                   { value: "200+", label: "Dress Styles" },
                   { value: "500+", label: "Happy Clients" },
@@ -101,7 +95,7 @@ export default function HomePage() {
 
             {/* Hero image collage */}
             <div className="relative hidden lg:block h-[600px]">
-              <div className="absolute right-0 top-0 w-64 h-80 rounded-3xl overflow-hidden shadow-2xl rotate-3">
+              <div className="absolute right-0 top-0 w-64 h-80 rounded-3xl overflow-hidden shadow-warm-lg rotate-3">
                 <Image
                   src="https://images.unsplash.com/photo-1594463750939-ebb28c3f7f75?w=400&h=500&fit=crop"
                   alt="Bridal dress"
@@ -109,7 +103,7 @@ export default function HomePage() {
                   className="object-cover"
                 />
               </div>
-              <div className="absolute right-40 top-32 w-56 h-72 rounded-3xl overflow-hidden shadow-xl -rotate-2">
+              <div className="absolute right-40 top-32 w-56 h-72 rounded-3xl overflow-hidden shadow-warm-md -rotate-2">
                 <Image
                   src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=500&fit=crop"
                   alt="Makeup"
@@ -117,7 +111,7 @@ export default function HomePage() {
                   className="object-cover"
                 />
               </div>
-              <div className="absolute right-8 bottom-8 w-52 h-64 rounded-3xl overflow-hidden shadow-lg rotate-1">
+              <div className="absolute right-8 bottom-8 w-52 h-64 rounded-3xl overflow-hidden shadow-warm-sm rotate-1">
                 <Image
                   src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop"
                   alt="Party dress"
@@ -125,12 +119,12 @@ export default function HomePage() {
                   className="object-cover"
                 />
               </div>
-              {/* Floating card */}
-              <div className="absolute left-0 bottom-20 bg-white rounded-2xl border border-brand-100 shadow-pink-md p-4 w-48 animate-fade-in">
+              {/* Floating review card */}
+              <div className="absolute left-0 bottom-20 bg-white rounded-2xl border border-[#E8D5C8] shadow-warm-md p-4 w-48 animate-fade-in">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="flex">
                     {[1,2,3,4,5].map(i => (
-                      <Star key={i} className="w-3 h-3 text-amber-400 fill-amber-400" />
+                      <Star key={i} className="w-3 h-3 text-gold-400 fill-gold-400" />
                     ))}
                   </div>
                 </div>
@@ -143,10 +137,10 @@ export default function HomePage() {
       </section>
 
       {/* Featured Dresses */}
-      <section className="py-24 bg-[#FFFAFC]">
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <Badge className="mb-4 bg-brand-50 text-brand-600 border-brand-200 hover:bg-brand-50">
+            <Badge className="mb-4" variant="default">
               New Arrivals
             </Badge>
             <h2 className="font-display text-4xl font-bold text-gray-900 mb-4">
@@ -160,7 +154,7 @@ export default function HomePage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredDresses.map((dress) => (
               <Link key={dress.id} href={`/dresses/${dress.id}`}>
-                <Card className="overflow-hidden group cursor-pointer border border-brand-100 shadow-pink-sm hover:shadow-pink-md transition-all duration-300">
+                <Card className="overflow-hidden group cursor-pointer border border-[#E8D5C8] shadow-warm-sm hover:shadow-warm-md transition-all duration-300">
                   <div className="relative h-72 overflow-hidden">
                     <Image
                       src={dress.image}
@@ -169,16 +163,16 @@ export default function HomePage() {
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <Badge className="absolute top-4 left-4 bg-white/90 text-gray-700 border-0">
+                    <Badge className="absolute top-4 left-4 bg-white/90 text-gray-700 border-0 normal-case tracking-normal text-xs">
                       {dress.category}
                     </Badge>
                     <button className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-brand-50">
-                      <Heart className="w-4 h-4 text-brand-500" />
+                      <Heart className="w-4 h-4 text-brand-600" />
                     </button>
                   </div>
                   <CardContent className="pt-4">
                     <h3 className="font-semibold text-gray-900 mb-1">{dress.title}</h3>
-                    <p className="text-brand-600 font-medium text-sm">
+                    <p className="text-brand-700 font-medium text-sm">
                       ₹{dress.rental_price.toLocaleString("en-IN")}/day rental
                     </p>
                   </CardContent>
@@ -197,18 +191,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Makeup Services */}
-      <section className="py-24 bg-gradient-to-br from-blush-50 via-brand-50 to-blush-100">
+      {/* Makeup Services — dark luxury section */}
+      <section className="py-24 bg-[#1A0A0F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <Badge className="mb-4 bg-white text-brand-600 border-brand-200 hover:bg-white">
-                <Sparkles className="w-3 h-3 mr-1" /> Makeup by Neha
-              </Badge>
-              <h2 className="font-display text-4xl font-bold text-gray-900 mb-6">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-gold-700/40 bg-white/10 px-3 py-0.5 text-[10px] font-medium uppercase tracking-widest text-gold-300 mb-4">
+                <Sparkles className="w-3 h-3" /> Makeup by Neha
+              </div>
+              <h2 className="font-display text-4xl font-bold text-[#F5EDE8] mb-6">
                 Transform Your Look
               </h2>
-              <p className="text-gray-600 leading-relaxed mb-8">
+              <p className="text-gray-400 leading-relaxed mb-8">
                 From ethereal bridal looks to bold party glam — Neha brings years of artistry
                 and a deep love for beauty to every appointment.
               </p>
@@ -216,28 +210,28 @@ export default function HomePage() {
                 {makeupServices.map((service) => (
                   <div
                     key={service.title}
-                    className="flex items-start gap-4 bg-white rounded-2xl border border-brand-100 p-4 shadow-pink-sm hover:shadow-pink-md transition-shadow"
+                    className="flex items-start gap-4 bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/8 transition-colors"
                   >
                     <span className="text-2xl">{service.icon}</span>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{service.title}</h4>
+                      <h4 className="font-semibold text-[#F5EDE8]">{service.title}</h4>
                       <p className="text-sm text-gray-500">{service.desc}</p>
                     </div>
-                    <span className="text-brand-600 font-semibold text-sm whitespace-nowrap">
+                    <span className="text-gold-400 font-semibold text-sm whitespace-nowrap">
                       From ₹{service.price.toLocaleString("en-IN")}
                     </span>
                   </div>
                 ))}
               </div>
               <Link href="/makeup" className="mt-8 inline-block">
-                <Button className="gap-2">
+                <Button variant="gold" className="gap-2">
                   <Calendar className="w-4 h-4" />
                   Book Appointment
                 </Button>
               </Link>
             </div>
             <div className="relative hidden lg:block">
-              <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[4/5]">
+              <div className="rounded-3xl overflow-hidden shadow-warm-xl aspect-[4/5]">
                 <Image
                   src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&h=750&fit=crop"
                   alt="Makeup artistry"
@@ -251,7 +245,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 bg-[#FFFAFC]">
+      <section className="py-24 bg-[#FDFAF7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <h2 className="font-display text-4xl font-bold text-gray-900 mb-4">
@@ -261,35 +255,32 @@ export default function HomePage() {
           </div>
           <div className="grid sm:grid-cols-3 gap-6">
             {testimonials.map((t, i) => (
-              <Card key={i} className="p-6 border-0 shadow-sm bg-gray-50 hover:shadow-md transition-shadow">
+              <div key={i} className="bg-white border border-[#E8D5C8] rounded-2xl shadow-warm-sm p-6">
                 <div className="flex mb-3">
                   {Array.from({ length: t.rating }).map((_, j) => (
-                    <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />
+                    <Star key={j} className="w-4 h-4 text-gold-400 fill-gold-400" />
                   ))}
                 </div>
-                <p className="text-gray-700 italic mb-4">&ldquo;{t.text}&rdquo;</p>
+                <p className="text-gray-700 italic mb-4 leading-relaxed">&ldquo;{t.text}&rdquo;</p>
                 <p className="font-semibold text-gray-900 text-sm">— {t.name}</p>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-24 bg-gradient-to-r from-brand-500 via-brand-600 to-blush-500 text-white">
+      <section className="py-24 bg-brand-800 text-white">
         <div className="max-w-3xl mx-auto px-4 text-center">
-          <Sparkles className="w-10 h-10 mx-auto mb-6 opacity-80" />
+          <Sparkles className="w-10 h-10 mx-auto mb-6 text-gold-400 opacity-90" />
           <h2 className="font-display text-4xl font-bold mb-4">
             Ready to Explore?
           </h2>
-          <p className="text-brand-100 text-lg mb-8">
+          <p className="text-brand-200 text-lg mb-8">
             Join Neha&apos;s growing community. Create your account and unlock your personal dashboard.
           </p>
           <Link href="/register">
-            <Button
-              size="lg"
-              className="bg-white text-brand-600 hover:bg-brand-50 shadow-[0_8px_32px_rgba(255,255,255,0.3)]"
-            >
+            <Button variant="gold" size="lg" className="gap-2">
               Create Free Account
               <ArrowRight className="w-4 h-4" />
             </Button>

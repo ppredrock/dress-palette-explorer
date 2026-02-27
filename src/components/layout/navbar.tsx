@@ -75,7 +75,7 @@ export function Navbar() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
-          ? "bg-white/95 backdrop-blur-md border-b border-brand-100 shadow-pink-sm"
+          ? "bg-white/98 backdrop-blur-md border-b border-[#E8D5C8] shadow-warm-sm"
           : "bg-transparent"
       )}
     >
@@ -83,7 +83,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-blush-500 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-brand-800 flex items-center justify-center shadow-warm-sm group-hover:scale-110 transition-transform">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <span className="font-display font-bold text-lg text-gray-900">
@@ -98,10 +98,10 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+                  "px-4 py-2 rounded-full text-sm font-medium tracking-wide transition-colors",
                   pathname.startsWith(link.href)
-                    ? "bg-brand-50 text-brand-600"
-                    : "text-gray-600 hover:text-brand-600 hover:bg-brand-50"
+                    ? "bg-brand-50 text-brand-700"
+                    : "text-gray-600 hover:text-brand-700 hover:bg-brand-50"
                 )}
               >
                 {link.label}
@@ -149,7 +149,7 @@ export function Navbar() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded-xl text-gray-600 hover:bg-brand-50 hover:text-brand-600"
+            className="md:hidden p-2 rounded-xl text-gray-600 hover:bg-brand-50 hover:text-brand-700"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -159,7 +159,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-white border-t border-brand-100 px-4 py-4 space-y-2">
+        <div className="md:hidden bg-white border-t border-[#E8D5C8] px-4 py-4 space-y-2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -167,8 +167,8 @@ export function Navbar() {
               className={cn(
                 "flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors",
                 pathname.startsWith(link.href)
-                  ? "bg-brand-50 text-brand-600"
-                  : "text-gray-700 hover:bg-brand-50 hover:text-brand-600"
+                  ? "bg-brand-50 text-brand-700"
+                  : "text-gray-700 hover:bg-brand-50 hover:text-brand-700"
               )}
               onClick={() => setMobileOpen(false)}
             >
@@ -178,12 +178,12 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <div className="pt-2 border-t border-brand-100 space-y-2">
+          <div className="pt-2 border-t border-[#E8D5C8] space-y-2">
             {user ? (
               <>
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-brand-50 hover:text-brand-600"
+                  className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-brand-50 hover:text-brand-700"
                   onClick={() => setMobileOpen(false)}
                 >
                   <User className="w-4 h-4" />
@@ -191,7 +191,7 @@ export function Navbar() {
                 </Link>
                 <button
                   onClick={() => { handleSignOut(); setMobileOpen(false); }}
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-brand-50 hover:text-brand-600 w-full text-left"
+                  className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-brand-50 hover:text-brand-700 w-full text-left"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out

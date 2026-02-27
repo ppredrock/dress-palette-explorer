@@ -14,12 +14,12 @@ const sidebarLinks = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-brand-50/40 flex">
+    <div className="min-h-screen bg-[#FDFAF7] flex">
       {/* Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-brand-100 fixed inset-y-0 left-0 z-40">
-        <div className="p-6 border-b border-brand-100">
+      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-[#E8D5C8] fixed inset-y-0 left-0 z-40">
+        <div className="p-6 border-b border-[#E8D5C8]">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-blush-500 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-brand-800 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <span className="font-display font-bold text-lg text-gray-900">
@@ -33,7 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-brand-50 hover:text-brand-600 transition-colors"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-brand-50 hover:text-brand-700 transition-colors"
             >
               <Icon className="w-4 h-4 shrink-0" />
               {label}
@@ -41,11 +41,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           ))}
         </nav>
 
-        <div className="p-4 border-t border-brand-100">
+        <div className="p-4 border-t border-[#E8D5C8]">
           <form action="/api/auth/signout" method="post">
             <button
               type="submit"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-blush-50 hover:text-brand-700 transition-colors w-full"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-brand-50 hover:text-brand-700 transition-colors w-full"
             >
               <LogOut className="w-4 h-4 shrink-0" />
               Sign Out
@@ -57,14 +57,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Main content */}
       <div className="lg:pl-64 flex-1">
         {/* Mobile top bar */}
-        <header className="lg:hidden bg-white border-b border-brand-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+        <header className="lg:hidden bg-white border-b border-[#E8D5C8] px-4 py-3 flex items-center justify-between sticky top-0 z-30">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand-400 to-blush-500 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand-600 to-brand-800 flex items-center justify-center">
               <Sparkles className="w-3.5 h-3.5 text-white" />
             </div>
             <span className="font-display font-bold text-base text-gray-900">DressPalette</span>
           </Link>
-          <Link href="/" className="text-sm text-brand-600 font-medium">
+          <Link href="/" className="text-sm text-brand-700 font-medium">
             ← Home
           </Link>
         </header>

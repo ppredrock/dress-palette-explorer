@@ -9,7 +9,7 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4 group">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-blush-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-brand-800 flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <span className="font-display font-bold text-lg text-white">
@@ -22,14 +22,14 @@ export function Footer() {
             <div className="flex gap-3 mt-5">
               <a
                 href="#"
-                className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center hover:bg-brand-500 transition-colors"
+                className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center hover:bg-brand-700 transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram className="w-4 h-4" />
               </a>
               <a
                 href="#"
-                className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center hover:bg-brand-500 transition-colors"
+                className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center hover:bg-brand-700 transition-colors"
                 aria-label="YouTube"
               >
                 <Youtube className="w-4 h-4" />
@@ -39,7 +39,7 @@ export function Footer() {
 
           {/* Explore */}
           <div>
-            <h4 className="font-display tracking-wider uppercase text-sm text-white font-semibold mb-4">Explore</h4>
+            <h4 className="font-display tracking-wider uppercase text-xs text-gold-400 font-semibold mb-4">Explore</h4>
             <ul className="space-y-2 text-sm">
               {[
                 { href: "/dresses", label: "Dress Collection" },
@@ -49,7 +49,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="hover:text-brand-400 transition-colors"
+                    className="hover:text-brand-300 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -60,7 +60,7 @@ export function Footer() {
 
           {/* Account */}
           <div>
-            <h4 className="font-display tracking-wider uppercase text-sm text-white font-semibold mb-4">Account</h4>
+            <h4 className="font-display tracking-wider uppercase text-xs text-gold-400 font-semibold mb-4">Account</h4>
             <ul className="space-y-2 text-sm">
               {[
                 { href: "/register", label: "Join Now" },
@@ -71,7 +71,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="hover:text-brand-400 transition-colors"
+                    className="hover:text-brand-300 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -84,7 +84,7 @@ export function Footer() {
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-600">
           <p>© 2025 DressPaletteExplorer. All rights reserved.</p>
           <p className="flex items-center gap-1">
-            Made with <Heart className="w-3 h-3 text-brand-500 fill-brand-500" /> by Neha
+            Made with <Heart className="w-3 h-3 text-gold-400 fill-gold-400" /> by Neha
           </p>
         </div>
       </div>

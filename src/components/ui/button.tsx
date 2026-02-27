@@ -10,15 +10,17 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-brand-500 to-blush-500 text-white shadow-pink-md hover:from-brand-600 hover:to-blush-600 active:scale-[0.98]",
+          "bg-brand-700 text-white shadow-warm-sm hover:bg-brand-800 active:scale-[0.98]",
+        gold:
+          "bg-gold-500 text-white shadow-gold-glow hover:bg-gold-600 active:scale-[0.98]",
         destructive:
-          "bg-red-500 text-white shadow-sm hover:bg-red-600",
+          "bg-red-700 text-white shadow-warm-sm hover:bg-red-800",
         outline:
-          "border border-brand-200 bg-white text-brand-600 shadow-sm hover:bg-brand-50",
+          "border border-brand-700 bg-transparent text-brand-700 hover:bg-brand-50",
         secondary:
-          "bg-blush-100 text-blush-800 shadow-sm hover:bg-blush-200",
-        ghost: "hover:bg-brand-50 hover:text-brand-600",
-        link: "text-brand-600 underline-offset-4 hover:underline",
+          "bg-brand-50 text-brand-700 hover:bg-brand-100",
+        ghost: "hover:bg-brand-50 hover:text-brand-700",
+        link: "text-brand-700 underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-6 py-2",
