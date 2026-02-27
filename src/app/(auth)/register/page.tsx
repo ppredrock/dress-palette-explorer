@@ -48,6 +48,7 @@ export default function RegisterPage() {
       password: formData.password,
       options: {
         data: { full_name: formData.full_name },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
