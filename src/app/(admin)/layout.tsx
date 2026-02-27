@@ -34,10 +34,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (profile?.role !== "admin") redirect("/dashboard");
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 flex">
+    <div className="min-h-screen bg-[#0F0A0D] text-gray-100 flex">
       {/* Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-gray-900 border-r border-gray-800 fixed inset-y-0 left-0 z-40">
-        <div className="p-6 border-b border-gray-800">
+      <aside className="hidden lg:flex flex-col w-64 bg-[#160B10] border-r border-[#2A1520] fixed inset-y-0 left-0 z-40">
+        <div className="p-6 border-b border-[#2A1520]">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-blush-500 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
@@ -54,7 +54,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-brand-900/20 hover:text-brand-200 transition-colors"
             >
               <Icon className="w-4 h-4 shrink-0" />
               {label}
@@ -62,10 +62,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           ))}
         </nav>
 
-        <div className="p-4 border-t border-gray-800 space-y-0.5">
+        <div className="p-4 border-t border-[#2A1520] space-y-0.5">
           <Link
             href="/dashboard"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-brand-900/20 hover:text-brand-200 transition-colors"
           >
             <Settings className="w-4 h-4" />
             User Dashboard
@@ -73,7 +73,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <form action="/api/auth/signout" method="post">
             <button
               type="submit"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-red-900/50 hover:text-red-400 transition-colors w-full"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-brand-900/20 hover:text-brand-200 transition-colors w-full"
             >
               <LogOut className="w-4 h-4" />
               Sign Out

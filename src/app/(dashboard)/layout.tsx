@@ -14,10 +14,10 @@ const sidebarLinks = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-brand-50/40 flex">
       {/* Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-100 fixed inset-y-0 left-0 z-40">
-        <div className="p-6 border-b border-gray-100">
+      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-brand-100 fixed inset-y-0 left-0 z-40">
+        <div className="p-6 border-b border-brand-100">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-blush-500 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
@@ -41,11 +41,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           ))}
         </nav>
 
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-4 border-t border-brand-100">
           <form action="/api/auth/signout" method="post">
             <button
               type="submit"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors w-full"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-blush-50 hover:text-brand-700 transition-colors w-full"
             >
               <LogOut className="w-4 h-4 shrink-0" />
               Sign Out
@@ -57,7 +57,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Main content */}
       <div className="lg:pl-64 flex-1">
         {/* Mobile top bar */}
-        <header className="lg:hidden bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+        <header className="lg:hidden bg-white border-b border-brand-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand-400 to-blush-500 flex items-center justify-center">
               <Sparkles className="w-3.5 h-3.5 text-white" />

@@ -4,10 +4,27 @@
 
 @layer base {
   body {
-    @apply bg-white text-gray-900 antialiased;
+    @apply antialiased text-gray-900;
+    background-color: #FFF5F9;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-playfair), Georgia, serif;
+  }
+  ::selection {
+    @apply bg-brand-200 text-brand-900;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-blush-50;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-brand-300 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-brand-400;
   }
 }
 
@@ -21,5 +38,8 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+  .text-gradient-pink {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-blush-500;
   }
 }

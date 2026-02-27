@@ -3,7 +3,7 @@ import { Sparkles, Instagram, Youtube, Heart } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="bg-gray-950 text-gray-400 py-16">
+    <footer className="bg-[#1A0D13] text-gray-400 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand */}
@@ -22,14 +22,14 @@ export function Footer() {
             <div className="flex gap-3 mt-5">
               <a
                 href="#"
-                className="w-9 h-9 rounded-xl bg-gray-800 flex items-center justify-center hover:bg-brand-500 transition-colors"
+                className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center hover:bg-brand-500 transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram className="w-4 h-4" />
               </a>
               <a
                 href="#"
-                className="w-9 h-9 rounded-xl bg-gray-800 flex items-center justify-center hover:bg-brand-500 transition-colors"
+                className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center hover:bg-brand-500 transition-colors"
                 aria-label="YouTube"
               >
                 <Youtube className="w-4 h-4" />
@@ -39,7 +39,7 @@ export function Footer() {
 
           {/* Explore */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Explore</h4>
+            <h4 className="font-display tracking-wider uppercase text-sm text-white font-semibold mb-4">Explore</h4>
             <ul className="space-y-2 text-sm">
               {[
                 { href: "/dresses", label: "Dress Collection" },
@@ -60,7 +60,7 @@ export function Footer() {
 
           {/* Account */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Account</h4>
+            <h4 className="font-display tracking-wider uppercase text-sm text-white font-semibold mb-4">Account</h4>
             <ul className="space-y-2 text-sm">
               {[
                 { href: "/register", label: "Join Now" },
@@ -81,7 +81,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-600">
+        <div className="border-t border-white/10 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-600">
           <p>© 2025 DressPaletteExplorer. All rights reserved.</p>
           <p className="flex items-center gap-1">
             Made with <Heart className="w-3 h-3 text-brand-500 fill-brand-500" /> by Neha

@@ -75,7 +75,7 @@ export function Navbar() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
-          ? "bg-white/95 backdrop-blur-md shadow-sm"
+          ? "bg-white/95 backdrop-blur-md border-b border-brand-100 shadow-pink-sm"
           : "bg-transparent"
       )}
     >
@@ -149,7 +149,7 @@ export function Navbar() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded-xl text-gray-600 hover:bg-gray-100"
+            className="md:hidden p-2 rounded-xl text-gray-600 hover:bg-brand-50 hover:text-brand-600"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -159,7 +159,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-2">
+        <div className="md:hidden bg-white border-t border-brand-100 px-4 py-4 space-y-2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -168,7 +168,7 @@ export function Navbar() {
                 "flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors",
                 pathname.startsWith(link.href)
                   ? "bg-brand-50 text-brand-600"
-                  : "text-gray-700 hover:bg-gray-50"
+                  : "text-gray-700 hover:bg-brand-50 hover:text-brand-600"
               )}
               onClick={() => setMobileOpen(false)}
             >
@@ -178,12 +178,12 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <div className="pt-2 border-t border-gray-100 space-y-2">
+          <div className="pt-2 border-t border-brand-100 space-y-2">
             {user ? (
               <>
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-brand-50 hover:text-brand-600"
                   onClick={() => setMobileOpen(false)}
                 >
                   <User className="w-4 h-4" />
@@ -191,7 +191,7 @@ export function Navbar() {
                 </Link>
                 <button
                   onClick={() => { handleSignOut(); setMobileOpen(false); }}
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 w-full text-left"
+                  className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-brand-50 hover:text-brand-600 w-full text-left"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out

@@ -45,11 +45,11 @@ export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blush-50 via-white to-rose-50">
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-brand-50 via-blush-50 to-white">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand-100/50 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-blush-100/50 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-rose-50/30 blur-3xl" />
+          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand-200/40 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-blush-200/40 blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-brand-100/20 blur-3xl" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
@@ -126,7 +126,7 @@ export default function HomePage() {
                 />
               </div>
               {/* Floating card */}
-              <div className="absolute left-0 bottom-20 bg-white rounded-2xl shadow-xl p-4 w-48 animate-fade-in">
+              <div className="absolute left-0 bottom-20 bg-white rounded-2xl border border-brand-100 shadow-pink-md p-4 w-48 animate-fade-in">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="flex">
                     {[1,2,3,4,5].map(i => (
@@ -143,7 +143,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Dresses */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[#FFFAFC]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <Badge className="mb-4 bg-brand-50 text-brand-600 border-brand-200 hover:bg-brand-50">
@@ -160,7 +160,7 @@ export default function HomePage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredDresses.map((dress) => (
               <Link key={dress.id} href={`/dresses/${dress.id}`}>
-                <Card className="overflow-hidden group cursor-pointer border-0 shadow-sm hover:shadow-xl transition-all duration-300">
+                <Card className="overflow-hidden group cursor-pointer border border-brand-100 shadow-pink-sm hover:shadow-pink-md transition-all duration-300">
                   <div className="relative h-72 overflow-hidden">
                     <Image
                       src={dress.image}
@@ -178,7 +178,7 @@ export default function HomePage() {
                   </div>
                   <CardContent className="pt-4">
                     <h3 className="font-semibold text-gray-900 mb-1">{dress.title}</h3>
-                    <p className="text-brand-500 font-medium text-sm">
+                    <p className="text-brand-600 font-medium text-sm">
                       ₹{dress.rental_price.toLocaleString("en-IN")}/day rental
                     </p>
                   </CardContent>
@@ -198,7 +198,7 @@ export default function HomePage() {
       </section>
 
       {/* Makeup Services */}
-      <section className="py-24 bg-gradient-to-br from-blush-50 to-rose-50">
+      <section className="py-24 bg-gradient-to-br from-blush-50 via-brand-50 to-blush-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -216,14 +216,14 @@ export default function HomePage() {
                 {makeupServices.map((service) => (
                   <div
                     key={service.title}
-                    className="flex items-start gap-4 bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                    className="flex items-start gap-4 bg-white rounded-2xl border border-brand-100 p-4 shadow-pink-sm hover:shadow-pink-md transition-shadow"
                   >
                     <span className="text-2xl">{service.icon}</span>
                     <div className="flex-1">
                       <h4 className="font-semibold text-gray-900">{service.title}</h4>
                       <p className="text-sm text-gray-500">{service.desc}</p>
                     </div>
-                    <span className="text-brand-500 font-semibold text-sm whitespace-nowrap">
+                    <span className="text-brand-600 font-semibold text-sm whitespace-nowrap">
                       From ₹{service.price.toLocaleString("en-IN")}
                     </span>
                   </div>
@@ -251,7 +251,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[#FFFAFC]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <h2 className="font-display text-4xl font-bold text-gray-900 mb-4">
@@ -276,7 +276,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 bg-gradient-to-r from-brand-500 to-blush-500 text-white">
+      <section className="py-24 bg-gradient-to-r from-brand-500 via-brand-600 to-blush-500 text-white">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <Sparkles className="w-10 h-10 mx-auto mb-6 opacity-80" />
           <h2 className="font-display text-4xl font-bold mb-4">
@@ -288,7 +288,7 @@ export default function HomePage() {
           <Link href="/register">
             <Button
               size="lg"
-              className="bg-white text-brand-600 hover:bg-brand-50 shadow-xl"
+              className="bg-white text-brand-600 hover:bg-brand-50 shadow-[0_8px_32px_rgba(255,255,255,0.3)]"
             >
               Create Free Account
               <ArrowRight className="w-4 h-4" />

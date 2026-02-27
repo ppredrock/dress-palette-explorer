@@ -10,31 +10,31 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Brand palette — warm rose / blush tones
+        // Brand palette — true pinks, fashion-luxury
         brand: {
-          50: "#fff1f3",
-          100: "#ffe4e8",
-          200: "#ffccd5",
-          300: "#ffa0b3",
-          400: "#ff6b8a",
-          500: "#f83d64",
-          600: "#e51d48",
-          700: "#c1133c",
-          800: "#a11237",
-          900: "#891334",
-          950: "#4c0418",
+          50: "#FFF0F6",
+          100: "#FFE3EF",
+          200: "#FFBAD8",
+          300: "#FF8EBE",
+          400: "#F760A4",
+          500: "#E8368B",
+          600: "#C92076",
+          700: "#A3185E",
+          800: "#821649",
+          900: "#671238",
+          950: "#3D0A21",
         },
         blush: {
-          50: "#fdf4f7",
-          100: "#fce8f1",
-          200: "#fbd0e4",
-          300: "#f8a8cc",
-          400: "#f372a9",
-          500: "#eb4888",
-          600: "#d92870",
-          700: "#b51c5a",
-          800: "#961a4c",
-          900: "#7e1b43",
+          50: "#FFF5FA",
+          100: "#FFE8F4",
+          200: "#FFD0E8",
+          300: "#FFB0D4",
+          400: "#FF85B8",
+          500: "#FF5C9C",
+          600: "#E8387D",
+          700: "#C22767",
+          800: "#9C1E52",
+          900: "#7A173F",
         },
         rose: {
           50: "#fff1f2",
@@ -58,6 +58,12 @@ const config: Config = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      },
+      boxShadow: {
+        "pink-sm": "0 1px 3px 0 rgb(232 54 139 / 0.12)",
+        "pink-md": "0 4px 16px 0 rgb(232 54 139 / 0.16)",
+        "pink-lg": "0 8px 32px 0 rgb(232 54 139 / 0.20)",
+        "pink-xl": "0 16px 48px 0 rgb(232 54 139 / 0.24)",
       },
       animation: {
         "fade-in": "fadeIn 0.5s ease-in-out",
