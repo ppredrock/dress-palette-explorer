@@ -4,11 +4,21 @@ export type CompressOptions = {
   type?: "image/webp" | "image/jpeg";
 };
 
+async function encode(
+  canvas: HTMLCanvasElement,
+  type: string,
+  quality: number,
+): Promise<Blob | null> {
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob), type, quality);
+  });
+}
+
 export async function compressImage(
   file: File,
   opts: CompressOptions = {},
 ): Promise<Blob> {
-  const { maxWidth = 1200, quality = 0.7, type = "image/webp" } = opts;
+  const { maxWidth = 1200, quality = 0.7 } = opts;
 
   const bitmap = await createImageBitmap(file);
   let { width, height } = bitmap;
@@ -26,14 +36,13 @@ export async function compressImage(
   ctx.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();
 
-  return new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => {
-        if (blob) resolve(blob);
-        else reject(new Error("Image encoding failed"));
-      },
-      type,
-      quality,
-    );
-  });
+  // Try WebP first (~30% smaller); fall back to JPEG on browsers that
+  // don't encode WebP via canvas.toBlob (older iOS Safari).
+  const preferred = opts.type ?? "image/webp";
+  let blob = await encode(canvas, preferred, quality);
+  if (!blob && preferred !== "image/jpeg") {
+    blob = await encode(canvas, "image/jpeg", quality);
+  }
+  if (!blob) throw new Error("Image encoding failed");
+  return blob;
 }

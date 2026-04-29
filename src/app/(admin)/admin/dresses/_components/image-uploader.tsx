@@ -10,6 +10,51 @@ type Props = {
   folder?: string;
 };
 
+type SignResponse = {
+  cloudName: string;
+  apiKey: string;
+  timestamp: number;
+  folder: string;
+  signature: string;
+};
+
+async function uploadToCloudinary(
+  blob: Blob,
+  filename: string,
+  folder: string | undefined,
+): Promise<string> {
+  const sigRes = await fetch("/api/admin/upload/sign", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ folder }),
+  });
+  if (!sigRes.ok) {
+    const body = await sigRes.json().catch(() => null);
+    throw new Error(body?.error ?? `Could not sign upload (${sigRes.status})`);
+  }
+  const sig: SignResponse = await sigRes.json();
+
+  const fd = new FormData();
+  fd.append("file", blob, filename);
+  fd.append("api_key", sig.apiKey);
+  fd.append("timestamp", String(sig.timestamp));
+  fd.append("signature", sig.signature);
+  fd.append("folder", sig.folder);
+
+  const upRes = await fetch(
+    `https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`,
+    { method: "POST", body: fd },
+  );
+  if (!upRes.ok) {
+    const body = await upRes.json().catch(() => null);
+    throw new Error(
+      body?.error?.message ?? `Cloudinary upload failed (${upRes.status})`,
+    );
+  }
+  const result = (await upRes.json()) as { secure_url: string };
+  return result.secure_url;
+}
+
 export function ImageUploader({ value, onChange, folder }: Props) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
@@ -29,16 +74,10 @@ export function ImageUploader({ value, onChange, folder }: Props) {
           throw new Error(`${file.name} isn't an image`);
         }
         const compressed = await compressImage(file, { maxWidth: 1200, quality: 0.7 });
-        const fd = new FormData();
-        fd.append("file", compressed, file.name.replace(/\.[^.]+$/, ".webp"));
-        if (folder) fd.append("folder", folder);
-
-        const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-        if (!res.ok) {
-          const body = await res.json().catch(() => null);
-          throw new Error(body?.error ?? `Upload failed (${res.status})`);
-        }
-        const { url } = await res.json();
+        const isWebp = compressed.type === "image/webp";
+        const ext = isWebp ? ".webp" : ".jpg";
+        const filename = file.name.replace(/\.[^.]+$/, ext);
+        const url = await uploadToCloudinary(compressed, filename, folder);
         newUrls.push(url);
         setProgress({ done: idx + 1, total: files.length });
       }
@@ -120,7 +159,7 @@ export function ImageUploader({ value, onChange, folder }: Props) {
 
       {value.length === 0 && !uploading && !error && (
         <p className="text-xs text-gray-500">
-          Images are auto-resized to 1200px and compressed to WebP before upload.
+          Images are auto-resized to 1200px and compressed before upload.
         </p>
       )}
     </div>
