@@ -7,6 +7,7 @@ import {
   FileText, MessageSquare, Users, LogOut, Settings
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
+import { MobileAdminNav } from "./_components/mobile-admin-nav";
 
 const adminLinks = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -75,6 +76,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </aside>
 
       <div className="lg:pl-64 flex-1">
+        <MobileAdminNav />
         <main className="p-6 lg:p-8">{children}</main>
       </div>
     </div>

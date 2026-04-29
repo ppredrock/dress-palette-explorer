@@ -163,6 +163,16 @@ export function Navbar() {
           <div className="pt-2 border-t border-[#E8D5C8] space-y-2">
             {user ? (
               <>
+                {user.role === "admin" && (
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-brand-700 bg-brand-50 hover:bg-brand-100"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Admin Console
+                  </Link>
+                )}
                 <Link
                   href="/dashboard"
                   className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-brand-50 hover:text-brand-700"
