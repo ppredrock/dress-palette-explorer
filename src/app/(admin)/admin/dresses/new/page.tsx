@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { ImageUploader } from "../_components/image-uploader";
 
 const CATEGORIES = [
   "bridal",
@@ -37,7 +38,7 @@ export default function NewDressPage() {
   const [price, setPrice] = useState("");
   const [rentalPrice, setRentalPrice] = useState("");
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("other");
-  const [images, setImages] = useState("");
+  const [images, setImages] = useState<string[]>([]);
   const [sizes, setSizes] = useState("");
   const [colors, setColors] = useState("");
   const [available, setAvailable] = useState(true);
@@ -58,7 +59,7 @@ export default function NewDressPage() {
       price: price === "" ? null : Number(price),
       rental_price: rentalPrice === "" ? null : Number(rentalPrice),
       category,
-      images: splitCsv(images),
+      images,
       sizes: splitCsv(sizes),
       colors: splitCsv(colors),
       available,
@@ -186,17 +187,8 @@ export default function NewDressPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="images" className="text-gray-200">
-                Image URLs{" "}
-                <span className="text-gray-500 text-xs">(comma-separated)</span>
-              </Label>
-              <Input
-                id="images"
-                value={images}
-                onChange={(e) => setImages(e.target.value)}
-                placeholder="https://..., https://..."
-                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
-              />
+              <Label className="text-gray-200">Images</Label>
+              <ImageUploader value={images} onChange={setImages} folder="dress-palette/dresses" />
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
