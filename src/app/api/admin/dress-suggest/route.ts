@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "imageUrl required" }, { status: 400 });
   }
 
-  // Fetch the image and base64-encode it for Gemini's inline_data input.
   const imgRes = await fetch(imageUrl);
   if (!imgRes.ok) {
     return NextResponse.json(
@@ -40,32 +39,50 @@ export async function POST(req: NextRequest) {
   const base64 = buf.toString("base64");
 
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-  const result = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
-    contents: [
-      {
-        role: "user",
-        parts: [
-          { text: SYSTEM },
-          { inlineData: { mimeType, data: base64 } },
-        ],
-      },
-    ],
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          title: { type: Type.STRING },
-          description: { type: Type.STRING },
-        },
-        required: ["title", "description"],
-      },
-      temperature: 0.7,
-    },
-  });
 
-  const raw = result.text ?? "";
+  let raw: string;
+  try {
+    const result = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { text: SYSTEM },
+            { inlineData: { mimeType, data: base64 } },
+          ],
+        },
+      ],
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING },
+            description: { type: Type.STRING },
+          },
+          required: ["title", "description"],
+        },
+        temperature: 0.7,
+      },
+    });
+    raw = result.text ?? "";
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    // Gemini SDK throws ApiError with status 429 / 403 / etc embedded in message
+    const status = /\b(429|RESOURCE_EXHAUSTED)\b/.test(msg)
+      ? 429
+      : /\b(403|PERMISSION_DENIED)\b/.test(msg)
+        ? 403
+        : 502;
+    const cleanMsg = status === 429
+      ? "Gemini quota exceeded — try again in a minute, or pick a model with available quota."
+      : status === 403
+        ? "Gemini API key rejected (403). Check the key and that the Generative Language API is enabled."
+        : `Gemini error: ${msg.slice(0, 200)}`;
+    return NextResponse.json({ error: cleanMsg }, { status });
+  }
+
   let parsed: { title?: string; description?: string };
   try {
     parsed = JSON.parse(raw);
