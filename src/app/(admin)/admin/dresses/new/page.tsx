@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +32,8 @@ export default function NewDressPage() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [suggesting, setSuggesting] = useState(false);
+  const [suggestError, setSuggestError] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -43,6 +45,33 @@ export default function NewDressPage() {
   const [colors, setColors] = useState("");
   const [available, setAvailable] = useState(true);
   const [featured, setFeatured] = useState(false);
+
+  const handleSuggest = async () => {
+    if (images.length === 0) {
+      setSuggestError("Upload at least one image first");
+      return;
+    }
+    setSuggesting(true);
+    setSuggestError(null);
+    try {
+      const res = await fetch("/api/admin/dress-suggest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: images[0] }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? `Suggest failed (${res.status})`);
+      }
+      const { title: t, description: d } = await res.json();
+      if (t) setTitle(t);
+      if (d) setDescription(d);
+    } catch (e) {
+      setSuggestError(e instanceof Error ? e.message : "Suggest failed");
+    } finally {
+      setSuggesting(false);
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -189,6 +218,26 @@ export default function NewDressPage() {
             <div className="space-y-2">
               <Label className="text-gray-200">Images</Label>
               <ImageUploader value={images} onChange={setImages} folder="dress-palette/dresses" />
+              {images.length > 0 && (
+                <div className="space-y-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSuggest}
+                    disabled={suggesting}
+                    className="gap-2"
+                  >
+                    {suggesting ? (
+                      <div className="w-3 h-3 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+                    ) : (
+                      <Sparkles className="w-3.5 h-3.5" />
+                    )}
+                    {suggesting ? "Generating..." : "Suggest title & description from image"}
+                  </Button>
+                  {suggestError && <p className="text-xs text-red-400">{suggestError}</p>}
+                </div>
+              )}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
