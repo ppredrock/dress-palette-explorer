@@ -2,11 +2,11 @@ import { redirect } from "next/navigation";
 import { desc, eq } from "drizzle-orm";
 import { Calendar, ShoppingBag } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { dress_bookings, dresses, profiles } from "@/db/schema";
+import StatusSelect from "./StatusSelect";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Bookings" };
@@ -28,13 +28,6 @@ export default async function AdminBookingsPage() {
     .leftJoin(dresses, eq(dress_bookings.dress_id, dresses.id))
     .leftJoin(profiles, eq(dress_bookings.user_id, profiles.id))
     .orderBy(desc(dress_bookings.created_at));
-
-  const statusColors: Record<string, "warning" | "success" | "secondary" | "destructive"> = {
-    pending: "warning",
-    confirmed: "success",
-    completed: "secondary",
-    cancelled: "destructive",
-  };
 
   return (
     <div className="space-y-6">
@@ -66,7 +59,10 @@ export default async function AdminBookingsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <p className="text-sm font-semibold text-white">{row.dressTitle ?? "Dress"}</p>
-                        <Badge variant={statusColors[row.booking.status]}>{row.booking.status}</Badge>
+                        <StatusSelect
+                          bookingId={row.booking.id}
+                          initialStatus={row.booking.status}
+                        />
                       </div>
                       <p className="text-xs text-gray-400 mb-2">
                         {row.userFullName ?? row.userEmail ?? "User"}

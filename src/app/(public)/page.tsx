@@ -1,39 +1,23 @@
 import Link from "next/link";
 import Image from "next/image";
+import { desc, eq } from "drizzle-orm";
 import { ArrowRight, Sparkles, Heart, Star, Calendar, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { db } from "@/lib/db";
+import { dresses, makeup_services } from "@/db/schema";
 
-const featuredDresses = [
-  {
-    id: "1",
-    title: "Blush Rose Bridal Gown",
-    category: "Bridal",
-    rental_price: 2500,
-    image: "https://images.unsplash.com/photo-1594463750939-ebb28c3f7f75?w=400&h=500&fit=crop",
-  },
-  {
-    id: "2",
-    title: "Midnight Sequin Party Dress",
-    category: "Party",
-    rental_price: 1200,
-    image: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=500&fit=crop",
-  },
-  {
-    id: "3",
-    title: "Emerald Ethnic Anarkali",
-    category: "Ethnic",
-    rental_price: 1800,
-    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=500&fit=crop",
-  },
-];
+export const dynamic = "force-dynamic";
 
-const makeupServices = [
-  { icon: "💍", title: "Bridal Makeup", desc: "Full bridal look with airbrush finish", price: 8000 },
-  { icon: "✨", title: "Party Glam", desc: "Bold looks for every celebration", price: 3500 },
-  { icon: "🌸", title: "Natural Glow", desc: "Effortless everyday enhancement", price: 1800 },
-];
+const MAKEUP_ICONS: Record<string, string> = {
+  bridal: "💍",
+  party: "✨",
+  natural: "🌸",
+  editorial: "📸",
+  special_effects: "🎭",
+  other: "💄",
+};
 
 const testimonials = [
   { name: "Priya S.", text: "Neha made me look absolutely stunning on my wedding day. The makeup lasted all 12 hours!", rating: 5 },
@@ -41,7 +25,38 @@ const testimonials = [
   { name: "Ritika M.", text: "Love the lifestyle content. Neha's fashion tips are so practical and inspiring.", rating: 5 },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetch featured dresses; fall back to most recent available if fewer than 3.
+  const featuredDresses = await db
+    .select()
+    .from(dresses)
+    .where(eq(dresses.featured, true))
+    .orderBy(desc(dresses.created_at))
+    .limit(3);
+
+  if (featuredDresses.length < 3) {
+    const recent = await db
+      .select()
+      .from(dresses)
+      .where(eq(dresses.available, true))
+      .orderBy(desc(dresses.created_at))
+      .limit(6);
+    const seen = new Set(featuredDresses.map((d) => d.id));
+    for (const d of recent) {
+      if (featuredDresses.length >= 3) break;
+      if (!seen.has(d.id)) {
+        featuredDresses.push(d);
+        seen.add(d.id);
+      }
+    }
+  }
+
+  const makeupServices = await db
+    .select()
+    .from(makeup_services)
+    .where(eq(makeup_services.available, true))
+    .limit(3);
+
   return (
     <>
       {/* Hero */}
@@ -151,35 +166,47 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredDresses.map((dress) => (
-              <Link key={dress.id} href={`/dresses/${dress.id}`}>
-                <Card className="overflow-hidden group cursor-pointer border border-[#E8D5C8] shadow-warm-sm hover:shadow-warm-md transition-all duration-300">
-                  <div className="relative h-72 overflow-hidden">
-                    <Image
-                      src={dress.image}
-                      alt={dress.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <Badge className="absolute top-4 left-4 bg-white/90 text-gray-700 border-0 normal-case tracking-normal text-xs">
-                      {dress.category}
-                    </Badge>
-                    <button className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-brand-50">
-                      <Heart className="w-4 h-4 text-brand-600" />
-                    </button>
-                  </div>
-                  <CardContent className="pt-4">
-                    <h3 className="font-semibold text-gray-900 mb-1">{dress.title}</h3>
-                    <p className="text-brand-700 font-medium text-sm">
-                      ₹{dress.rental_price.toLocaleString("en-IN")}/day rental
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+          {featuredDresses.length > 0 ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredDresses.map((dress) => (
+                <Link key={dress.id} href={`/dresses/${dress.id}`}>
+                  <Card className="overflow-hidden group cursor-pointer border border-[#E8D5C8] shadow-warm-sm hover:shadow-warm-md transition-all duration-300">
+                    <div className="relative h-72 overflow-hidden bg-gray-100">
+                      {dress.images?.[0] ? (
+                        <Image
+                          src={dress.images[0]}
+                          alt={dress.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <ShoppingBag className="w-10 h-10 text-gray-300" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <Badge className="absolute top-4 left-4 bg-white/90 text-gray-700 border-0 normal-case tracking-normal text-xs capitalize">
+                        {dress.category}
+                      </Badge>
+                      <button className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-brand-50">
+                        <Heart className="w-4 h-4 text-brand-600" />
+                      </button>
+                    </div>
+                    <CardContent className="pt-4">
+                      <h3 className="font-semibold text-gray-900 mb-1">{dress.title}</h3>
+                      <p className="text-brand-700 font-medium text-sm">
+                        ₹{(dress.rental_price ?? 0).toLocaleString("en-IN")}/day rental
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-gray-500">
+              New pieces are landing soon — check back!
+            </p>
+          )}
 
           <div className="text-center mt-10">
             <Link href="/dresses">
@@ -207,21 +234,31 @@ export default function HomePage() {
                 and a deep love for beauty to every appointment.
               </p>
               <div className="space-y-4">
-                {makeupServices.map((service) => (
-                  <div
-                    key={service.title}
-                    className="flex items-start gap-4 bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/8 transition-colors"
-                  >
-                    <span className="text-2xl">{service.icon}</span>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-[#F5EDE8]">{service.title}</h4>
-                      <p className="text-sm text-gray-500">{service.desc}</p>
+                {makeupServices.length > 0 ? (
+                  makeupServices.map((service) => (
+                    <div
+                      key={service.id}
+                      className="flex items-start gap-4 bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/8 transition-colors"
+                    >
+                      <span className="text-2xl">
+                        {MAKEUP_ICONS[service.category] ?? "💄"}
+                      </span>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-[#F5EDE8]">{service.title}</h4>
+                        {service.description && (
+                          <p className="text-sm text-gray-500">{service.description}</p>
+                        )}
+                      </div>
+                      <span className="text-gold-400 font-semibold text-sm whitespace-nowrap">
+                        From ₹{service.price.toLocaleString("en-IN")}
+                      </span>
                     </div>
-                    <span className="text-gold-400 font-semibold text-sm whitespace-nowrap">
-                      From ₹{service.price.toLocaleString("en-IN")}
-                    </span>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">
+                    Services coming soon.
+                  </p>
+                )}
               </div>
               <Link href="/makeup" className="mt-8 inline-block">
                 <Button variant="gold" className="gap-2">

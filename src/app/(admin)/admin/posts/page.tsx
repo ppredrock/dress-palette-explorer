@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { desc } from "drizzle-orm";
-import { FileText, Plus, Calendar } from "lucide-react";
+import { FileText, Plus, Calendar, Pencil } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { formatDate } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { lifestyle_posts } from "@/db/schema";
+import DeletePostButton from "./DeletePostButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Blog Posts" };
@@ -29,10 +31,12 @@ export default async function AdminPostsPage() {
           <h1 className="font-display text-2xl font-bold text-white">Blog Posts</h1>
           <p className="text-gray-400 text-sm mt-1">{posts.length} posts</p>
         </div>
-        <Button className="gap-2">
-          <Plus className="w-4 h-4" />
-          New Post
-        </Button>
+        <Link href="/admin/posts/new">
+          <Button className="gap-2">
+            <Plus className="w-4 h-4" />
+            New Post
+          </Button>
+        </Link>
       </div>
 
       {posts.length > 0 ? (
@@ -58,6 +62,20 @@ export default async function AdminPostsPage() {
                 <Badge variant={post.published ? "success" : "secondary"} className="text-xs shrink-0">
                   {post.published ? "Published" : "Draft"}
                 </Badge>
+                <div className="flex items-center gap-1 shrink-0">
+                  <Link href={`/admin/posts/${post.id}/edit`}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="text-gray-400 hover:text-white"
+                      aria-label="Edit post"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                  <DeletePostButton id={post.id} title={post.title} />
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -67,10 +85,12 @@ export default async function AdminPostsPage() {
           <CardContent className="text-center py-16">
             <FileText className="w-12 h-12 text-gray-600 mx-auto mb-3" />
             <p className="text-gray-400 mb-4">No posts yet</p>
-            <Button className="gap-2">
-              <Plus className="w-4 h-4" />
-              Write First Post
-            </Button>
+            <Link href="/admin/posts/new">
+              <Button className="gap-2">
+                <Plus className="w-4 h-4" />
+                Write First Post
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       )}

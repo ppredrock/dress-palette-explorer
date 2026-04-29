@@ -1,10 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, Star, Calendar, ArrowRight } from "lucide-react";
+import { desc, eq } from "drizzle-orm";
+import { Clock, Star, Calendar, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
+import { db } from "@/lib/db";
+import { makeup_services } from "@/db/schema";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,48 +15,7 @@ export const metadata: Metadata = {
   description: "Book professional makeup services with Neha — bridal, party, and everyday looks.",
 };
 
-const services = [
-  {
-    id: "1",
-    title: "Bridal Makeup",
-    description: "Complete bridal look including airbrush foundation, eye makeup, and hair styling. Designed to last through your entire wedding celebration.",
-    price: 8000,
-    duration_minutes: 180,
-    category: "Bridal",
-    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=500&h=400&fit=crop",
-    available: true,
-  },
-  {
-    id: "2",
-    title: "Party Glam",
-    description: "Make a statement at any celebration. Bold eyes, perfect lips, and luminous skin that photographs beautifully.",
-    price: 3500,
-    duration_minutes: 90,
-    category: "Party",
-    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&h=400&fit=crop",
-    available: true,
-  },
-  {
-    id: "3",
-    title: "Natural Glow",
-    description: "Everyday enhancement that brings out your natural beauty. Lightweight coverage, subtle definition, and a healthy glow.",
-    price: 1800,
-    duration_minutes: 60,
-    category: "Natural",
-    image: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=500&h=400&fit=crop",
-    available: true,
-  },
-  {
-    id: "4",
-    title: "Editorial Makeup",
-    description: "Creative, avant-garde looks for shoots, events, and those who dare to be different. Collaborative and artistic.",
-    price: 5500,
-    duration_minutes: 120,
-    category: "Editorial",
-    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=500&h=400&fit=crop",
-    available: true,
-  },
-];
+export const dynamic = "force-dynamic";
 
 const whyNeha = [
   { icon: "🎓", title: "Certified Artist", desc: "Trained at top beauty academies" },
@@ -62,7 +24,13 @@ const whyNeha = [
   { icon: "❤️", title: "Personal Touch", desc: "Every client is unique" },
 ];
 
-export default function MakeupPage() {
+export default async function MakeupPage() {
+  const services = await db
+    .select()
+    .from(makeup_services)
+    .where(eq(makeup_services.available, true))
+    .orderBy(desc(makeup_services.created_at));
+
   return (
     <div className="pt-24 pb-16 min-h-screen">
       {/* Hero */}
@@ -136,51 +104,66 @@ export default function MakeupPage() {
             <p className="text-gray-500">Choose the look that speaks to you</p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-6">
-            {services.map((service) => (
-              <Card key={service.id} className="overflow-hidden group border-0 shadow-sm hover:shadow-xl transition-all duration-300">
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src={service.image}
-                    alt={service.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <Badge className="absolute top-3 left-3 bg-white/90 text-gray-700 border-0">
-                    {service.category}
-                  </Badge>
-                </div>
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-display text-xl font-semibold text-gray-900">
-                      {service.title}
-                    </h3>
-                    <span className="font-bold text-brand-500 text-lg whitespace-nowrap ml-4">
-                      {formatCurrency(service.price)}
-                    </span>
+          {services.length > 0 ? (
+            <div className="grid sm:grid-cols-2 gap-6">
+              {services.map((service) => (
+                <Card key={service.id} className="overflow-hidden group border-0 shadow-sm hover:shadow-xl transition-all duration-300">
+                  <div className="relative h-48 overflow-hidden bg-gray-100">
+                    {service.image_url ? (
+                      <Image
+                        src={service.image_url}
+                        alt={service.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blush-50 to-rose-50">
+                        <Sparkles className="w-10 h-10 text-brand-300" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <Badge className="absolute top-3 left-3 bg-white/90 text-gray-700 border-0 capitalize">
+                      {service.category.replace("_", " ")}
+                    </Badge>
                   </div>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-4">
-                    {service.description}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-gray-400 text-sm">
-                      <Clock className="w-4 h-4" />
-                      {service.duration_minutes >= 60
-                        ? `${Math.floor(service.duration_minutes / 60)}h${service.duration_minutes % 60 > 0 ? ` ${service.duration_minutes % 60}m` : ""}`
-                        : `${service.duration_minutes}m`
-                      }
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-display text-xl font-semibold text-gray-900">
+                        {service.title}
+                      </h3>
+                      <span className="font-bold text-brand-500 text-lg whitespace-nowrap ml-4">
+                        {formatCurrency(service.price)}
+                      </span>
                     </div>
-                    <Link href={`/register?service=${service.id}`}>
-                      <Button size="sm" className="gap-1.5">
-                        Book <ArrowRight className="w-3 h-3" />
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    {service.description && (
+                      <p className="text-gray-500 text-sm leading-relaxed mb-4">
+                        {service.description}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-gray-400 text-sm">
+                        <Clock className="w-4 h-4" />
+                        {service.duration_minutes >= 60
+                          ? `${Math.floor(service.duration_minutes / 60)}h${service.duration_minutes % 60 > 0 ? ` ${service.duration_minutes % 60}m` : ""}`
+                          : `${service.duration_minutes}m`
+                        }
+                      </div>
+                      <Link href={`/register?service=${service.id}`}>
+                        <Button size="sm" className="gap-1.5">
+                          Book <ArrowRight className="w-3 h-3" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Sparkles className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No services available right now. Check back soon!</p>
+            </div>
+          )}
         </div>
       </section>
     </div>
