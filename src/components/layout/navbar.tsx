@@ -6,9 +6,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, ShoppingBag, Sparkles, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
-import type { Profile } from "@/types/database";
+
+type SessionUser = {
+  id: string;
+  email: string;
+  fullName: string | null;
+  role: "user" | "admin";
+  avatarUrl: string | null;
+};
 
 const navLinks = [
   { href: "/dresses", label: "Dresses" },
@@ -19,44 +24,20 @@ const navLinks = [
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [user, setUser] = useState<SessionUser | null>(null);
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClient();
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-        setProfile(data);
-      }
-    };
-    getUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_, session) => {
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          const { data } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", session.user.id)
-            .single();
-          setProfile(data);
-        } else {
-          setProfile(null);
-        }
-      }
-    );
-    return () => subscription.unsubscribe();
-  }, [supabase]);
+    let cancelled = false;
+    fetch("/api/auth/me", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (!cancelled) setUser(data?.user ?? null);
+      })
+      .catch(() => { if (!cancelled) setUser(null); });
+    return () => { cancelled = true; };
+  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -65,7 +46,8 @@ export function Navbar() {
   }, []);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await fetch("/api/auth/signout", { method: "POST" });
+    setUser(null);
     router.push("/");
     router.refresh();
   };
@@ -113,7 +95,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             {user ? (
               <>
-                {profile?.role === "admin" && (
+                {user.role === "admin" && (
                   <Link href="/admin">
                     <Button variant="outline" size="sm">
                       Admin
@@ -123,7 +105,7 @@ export function Navbar() {
                 <Link href="/dashboard">
                   <Button variant="ghost" size="sm" className="gap-2">
                     <User className="w-4 h-4" />
-                    {profile?.full_name?.split(" ")[0] ?? "Dashboard"}
+                    {user.fullName?.split(" ")[0] ?? "Dashboard"}
                   </Button>
                 </Link>
                 <Button

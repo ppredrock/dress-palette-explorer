@@ -1,31 +1,41 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { desc } from "drizzle-orm";
 import { Users, Mail, Calendar } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
+import { getCurrentUser } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { profiles } from "@/db/schema";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Users" };
+export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const { data: users } = await supabase
-    .from("profiles")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const users = await db
+    .select({
+      id: profiles.id,
+      email: profiles.email,
+      full_name: profiles.full_name,
+      avatar_url: profiles.avatar_url,
+      role: profiles.role,
+      created_at: profiles.created_at,
+    })
+    .from(profiles)
+    .orderBy(desc(profiles.created_at));
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-2xl font-bold text-white">Members</h1>
-        <p className="text-gray-400 text-sm mt-1">{users?.length ?? 0} registered members</p>
+        <p className="text-gray-400 text-sm mt-1">{users.length} registered members</p>
       </div>
 
-      {users && users.length > 0 ? (
+      {users.length > 0 ? (
         <div className="grid sm:grid-cols-2 gap-3">
           {users.map((u) => (
             <Card key={u.id} className="bg-gray-900 border-gray-800 hover:bg-gray-800 transition-colors">

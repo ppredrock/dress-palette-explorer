@@ -1,30 +1,30 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { desc } from "drizzle-orm";
 import { ShoppingBag, Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
+import { getCurrentUser } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { dresses } from "@/db/schema";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Dresses" };
+export const dynamic = "force-dynamic";
 
 export default async function AdminDressesPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const { data: dresses } = await supabase
-    .from("dresses")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const rows = await db.select().from(dresses).orderBy(desc(dresses.created_at));
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold text-white">Dress Collection</h1>
-          <p className="text-gray-400 text-sm mt-1">{dresses?.length ?? 0} dresses</p>
+          <p className="text-gray-400 text-sm mt-1">{rows.length} dresses</p>
         </div>
         <Button className="gap-2">
           <Plus className="w-4 h-4" />
@@ -32,9 +32,9 @@ export default async function AdminDressesPage() {
         </Button>
       </div>
 
-      {dresses && dresses.length > 0 ? (
+      {rows.length > 0 ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {dresses.map((dress) => (
+          {rows.map((dress) => (
             <Card key={dress.id} className="bg-gray-900 border-gray-800 overflow-hidden hover:bg-gray-800 transition-colors">
               <div className="relative h-48 bg-gray-800">
                 {dress.images?.[0] ? (

@@ -3,12 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, UserPlus, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { createClient } from "@/lib/supabase/client";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -20,9 +19,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -43,41 +40,26 @@ export default function RegisterPage() {
 
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.password,
-      options: {
-        data: { full_name: formData.full_name },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: formData.email,
+        password: formData.password,
+        full_name: formData.full_name,
+      }),
     });
 
-    setLoading(false);
-
-    if (error) {
-      setError(error.message);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data?.error ?? "Sign up failed");
+      setLoading(false);
       return;
     }
 
-    setSuccess(true);
-    setTimeout(() => router.push("/login"), 3000);
+    router.push("/dashboard");
+    router.refresh();
   };
-
-  if (success) {
-    return (
-      <Card className="border-0 shadow-xl text-center">
-        <CardContent className="py-12">
-          <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="font-display text-2xl font-bold text-gray-900 mb-2">
-            Account Created!
-          </h2>
-          <p className="text-gray-500 mb-4">
-            Please check your email to confirm your account. Redirecting to login...
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card className="border-0 shadow-xl">

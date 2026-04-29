@@ -1,55 +1,72 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { count, desc, eq } from "drizzle-orm";
 import { ShoppingBag, Calendar, Users, MessageSquare, FileText, Sparkles, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
+import { getCurrentUser } from "@/lib/auth";
+import { db } from "@/lib/db";
+import {
+  dresses, dress_bookings, makeup_appointments, messages, profiles,
+} from "@/db/schema";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Overview" };
+export const dynamic = "force-dynamic";
 
 export default async function AdminOverviewPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect("/login");
 
   const [
-    { count: totalDresses },
-    { count: totalBookings },
-    { count: pendingBookings },
-    { count: totalUsers },
-    { count: unreadMessages },
-    { count: totalAppointments },
-    { count: pendingAppointments },
-    { data: recentBookings },
-    { data: recentMessages },
+    [{ c: totalDresses }],
+    [{ c: totalBookings }],
+    [{ c: pendingBookings }],
+    [{ c: totalUsers }],
+    [{ c: unreadMessages }],
+    [{ c: totalAppointments }],
+    [{ c: pendingAppointments }],
+    recentBookingsRows,
+    recentMessagesRows,
   ] = await Promise.all([
-    supabase.from("dresses").select("*", { count: "exact", head: true }),
-    supabase.from("dress_bookings").select("*", { count: "exact", head: true }),
-    supabase.from("dress_bookings").select("*", { count: "exact", head: true }).eq("status", "pending"),
-    supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "user"),
-    supabase.from("messages").select("*", { count: "exact", head: true }).eq("read", false),
-    supabase.from("makeup_appointments").select("*", { count: "exact", head: true }),
-    supabase.from("makeup_appointments").select("*", { count: "exact", head: true }).eq("status", "pending"),
-    supabase
-      .from("dress_bookings")
-      .select("*, dress:dresses(title), user:profiles(full_name, email)")
-      .order("created_at", { ascending: false })
+    db.select({ c: count() }).from(dresses),
+    db.select({ c: count() }).from(dress_bookings),
+    db.select({ c: count() }).from(dress_bookings).where(eq(dress_bookings.status, "pending")),
+    db.select({ c: count() }).from(profiles).where(eq(profiles.role, "user")),
+    db.select({ c: count() }).from(messages).where(eq(messages.read, false)),
+    db.select({ c: count() }).from(makeup_appointments),
+    db.select({ c: count() }).from(makeup_appointments).where(eq(makeup_appointments.status, "pending")),
+    db
+      .select({
+        booking: dress_bookings,
+        dressTitle: dresses.title,
+        userFullName: profiles.full_name,
+        userEmail: profiles.email,
+      })
+      .from(dress_bookings)
+      .leftJoin(dresses, eq(dress_bookings.dress_id, dresses.id))
+      .leftJoin(profiles, eq(dress_bookings.user_id, profiles.id))
+      .orderBy(desc(dress_bookings.created_at))
       .limit(5),
-    supabase
-      .from("messages")
-      .select("*, user:profiles(full_name, email)")
-      .order("created_at", { ascending: false })
+    db
+      .select({
+        message: messages,
+        userFullName: profiles.full_name,
+        userEmail: profiles.email,
+      })
+      .from(messages)
+      .leftJoin(profiles, eq(messages.user_id, profiles.id))
+      .orderBy(desc(messages.created_at))
       .limit(5),
   ]);
 
   const stats = [
-    { label: "Total Dresses", value: totalDresses ?? 0, icon: ShoppingBag, href: "/admin/dresses", color: "text-brand-400" },
-    { label: "Dress Bookings", value: totalBookings ?? 0, icon: Calendar, href: "/admin/bookings", color: "text-blush-400", badge: pendingBookings ?? 0 },
-    { label: "Appointments", value: totalAppointments ?? 0, icon: Sparkles, href: "/admin/appointments", color: "text-purple-400", badge: pendingAppointments ?? 0 },
-    { label: "Members", value: totalUsers ?? 0, icon: Users, href: "/admin/users", color: "text-sky-400" },
-    { label: "Unread Messages", value: unreadMessages ?? 0, icon: MessageSquare, href: "/admin/messages", color: "text-amber-400" },
+    { label: "Total Dresses", value: totalDresses, icon: ShoppingBag, href: "/admin/dresses", color: "text-brand-400" },
+    { label: "Dress Bookings", value: totalBookings, icon: Calendar, href: "/admin/bookings", color: "text-blush-400", badge: pendingBookings },
+    { label: "Appointments", value: totalAppointments, icon: Sparkles, href: "/admin/appointments", color: "text-purple-400", badge: pendingAppointments },
+    { label: "Members", value: totalUsers, icon: Users, href: "/admin/users", color: "text-sky-400" },
+    { label: "Unread Messages", value: unreadMessages, icon: MessageSquare, href: "/admin/messages", color: "text-amber-400" },
   ];
 
   return (
@@ -59,7 +76,6 @@ export default async function AdminOverviewPage() {
         <p className="text-gray-400 text-sm">Manage your boutique from one place</p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {stats.map((stat) => (
           <Link key={stat.label} href={stat.href}>
@@ -80,7 +96,6 @@ export default async function AdminOverviewPage() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Recent bookings */}
         <Card className="bg-gray-900 border-gray-800">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-sm font-semibold text-white">Recent Bookings</CardTitle>
@@ -89,34 +104,30 @@ export default async function AdminOverviewPage() {
             </Link>
           </CardHeader>
           <CardContent>
-            {recentBookings && recentBookings.length > 0 ? (
+            {recentBookingsRows.length > 0 ? (
               <div className="space-y-3">
-                {recentBookings.map((booking) => {
-                  const dress = booking.dress as { title: string } | null;
-                  const bUser = booking.user as { full_name: string; email: string } | null;
-                  return (
-                    <div key={booking.id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-800">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">
-                          {dress?.title ?? "Dress"}
-                        </p>
-                        <p className="text-xs text-gray-400 truncate">
-                          {bUser?.full_name ?? bUser?.email ?? "User"} · {formatDate(booking.start_date)}
-                        </p>
-                      </div>
-                      <Badge
-                        variant={
-                          booking.status === "confirmed" ? "success" :
-                          booking.status === "pending" ? "warning" :
-                          booking.status === "cancelled" ? "destructive" : "secondary"
-                        }
-                        className="text-xs shrink-0"
-                      >
-                        {booking.status}
-                      </Badge>
+                {recentBookingsRows.map((row) => (
+                  <div key={row.booking.id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-800">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-white truncate">
+                        {row.dressTitle ?? "Dress"}
+                      </p>
+                      <p className="text-xs text-gray-400 truncate">
+                        {row.userFullName ?? row.userEmail ?? "User"} · {formatDate(row.booking.start_date)}
+                      </p>
                     </div>
-                  );
-                })}
+                    <Badge
+                      variant={
+                        row.booking.status === "confirmed" ? "success" :
+                        row.booking.status === "pending" ? "warning" :
+                        row.booking.status === "cancelled" ? "destructive" : "secondary"
+                      }
+                      className="text-xs shrink-0"
+                    >
+                      {row.booking.status}
+                    </Badge>
+                  </div>
+                ))}
               </div>
             ) : (
               <p className="text-gray-500 text-sm text-center py-6">No bookings yet</p>
@@ -124,7 +135,6 @@ export default async function AdminOverviewPage() {
           </CardContent>
         </Card>
 
-        {/* Recent messages */}
         <Card className="bg-gray-900 border-gray-800">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-sm font-semibold text-white">Recent Messages</CardTitle>
@@ -133,29 +143,26 @@ export default async function AdminOverviewPage() {
             </Link>
           </CardHeader>
           <CardContent>
-            {recentMessages && recentMessages.length > 0 ? (
+            {recentMessagesRows.length > 0 ? (
               <div className="space-y-3">
-                {recentMessages.map((msg) => {
-                  const msgUser = msg.user as { full_name: string; email: string } | null;
-                  return (
-                    <Link key={msg.id} href="/admin/messages">
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
-                        <div className="w-8 h-8 rounded-lg bg-purple-900 flex items-center justify-center shrink-0">
-                          <MessageSquare className="w-3.5 h-3.5 text-purple-400" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white truncate">{msg.subject}</p>
-                          <p className="text-xs text-gray-400 truncate">
-                            {msgUser?.full_name ?? msgUser?.email ?? "User"}
-                          </p>
-                        </div>
-                        {!msg.read && (
-                          <div className="w-2 h-2 rounded-full bg-brand-500 shrink-0" />
-                        )}
+                {recentMessagesRows.map((row) => (
+                  <Link key={row.message.id} href="/admin/messages">
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
+                      <div className="w-8 h-8 rounded-lg bg-purple-900 flex items-center justify-center shrink-0">
+                        <MessageSquare className="w-3.5 h-3.5 text-purple-400" />
                       </div>
-                    </Link>
-                  );
-                })}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white truncate">{row.message.subject}</p>
+                        <p className="text-xs text-gray-400 truncate">
+                          {row.userFullName ?? row.userEmail ?? "User"}
+                        </p>
+                      </div>
+                      {!row.message.read && (
+                        <div className="w-2 h-2 rounded-full bg-brand-500 shrink-0" />
+                      )}
+                    </div>
+                  </Link>
+                ))}
               </div>
             ) : (
               <p className="text-gray-500 text-sm text-center py-6">No messages yet</p>
@@ -164,7 +171,6 @@ export default async function AdminOverviewPage() {
         </Card>
       </div>
 
-      {/* Quick actions */}
       <Card className="bg-gray-900 border-gray-800">
         <CardContent className="p-6">
           <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">

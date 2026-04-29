@@ -1,12 +1,12 @@
 export const dynamic = "force-dynamic";
 
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
   Sparkles, LayoutDashboard, ShoppingBag, Calendar,
   FileText, MessageSquare, Users, LogOut, Settings
 } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth";
 
 const adminLinks = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -20,18 +20,10 @@ const adminLinks = [
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") redirect("/dashboard");
+  if (user.role !== "admin") redirect("/dashboard");
 
   return (
     <div className="min-h-screen bg-[#0F0A0D] text-gray-100 flex">

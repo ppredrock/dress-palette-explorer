@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MessageSquare, Send, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,9 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { createClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/utils";
-import type { Message } from "@/types/database";
+import type { Message } from "@/db/schema";
 
 export default function MessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -18,40 +17,30 @@ export default function MessagesPage() {
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
-  const supabase = createClient();
 
-  useEffect(() => {
-    const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase
-        .from("messages")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-      setMessages(data ?? []);
-    };
-    load();
-  }, [supabase, sent]);
+  const load = useCallback(async () => {
+    const res = await fetch("/api/messages", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    setMessages(data?.messages ?? []);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    await supabase.from("messages").insert({
-      user_id: user.id,
-      subject,
-      content,
-      read: false,
+    const res = await fetch("/api/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ subject, content }),
     });
-
-    setSubject("");
-    setContent("");
     setSending(false);
-    setSent((v) => !v);
+    if (res.ok) {
+      setSubject("");
+      setContent("");
+      load();
+    }
   };
 
   return (
@@ -61,7 +50,6 @@ export default function MessagesPage() {
         <p className="text-gray-500 text-sm mt-1">Send a message to Neha and track her replies</p>
       </div>
 
-      {/* Compose */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="text-base">Send a Message</CardTitle>
@@ -101,7 +89,6 @@ export default function MessagesPage() {
         </CardContent>
       </Card>
 
-      {/* Message history */}
       {messages.length > 0 && (
         <div className="space-y-3">
           <h2 className="font-semibold text-gray-900">Previous Messages</h2>

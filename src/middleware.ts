@@ -1,56 +1,25 @@
-import { createServerClient } from "@supabase/ssr";
+import { getIronSession } from "iron-session";
 import { NextResponse, type NextRequest } from "next/server";
+import { sessionOptions, type SessionData } from "@/lib/session";
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setAll(cookiesToSet: any[]) {
-          cookiesToSet.forEach(({ name, value }: { name: string; value: string }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }: { name: string; value: string; options?: object }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const response = NextResponse.next();
+  const session = await getIronSession<SessionData>(request, response, sessionOptions);
   const path = request.nextUrl.pathname;
 
-  // Protect dashboard routes
-  if (path.startsWith("/dashboard") && !user) {
+  if (path.startsWith("/dashboard") && !session.userId) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Protect admin routes
-  if (path.startsWith("/admin")) {
-    if (!user) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-    // Role check is done in admin layout — middleware just gates auth
+  if (path.startsWith("/admin") && !session.userId) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Redirect logged-in users away from auth pages
-  if ((path === "/login" || path === "/register") && user) {
+  if ((path === "/login" || path === "/register") && session.userId) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  return supabaseResponse;
+  return response;
 }
 
 export const config = {

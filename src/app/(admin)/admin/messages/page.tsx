@@ -1,47 +1,50 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MessageSquare, Send, ChevronDown, ChevronUp, Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { createClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/utils";
-import type { Message, Profile } from "@/types/database";
+import type { Message } from "@/db/schema";
 
-type MessageWithUser = Message & { user: Profile | null };
+type AdminMessage = Message & {
+  user: { full_name: string | null; email: string; avatar_url: string | null } | null;
+};
 
 export default function AdminMessagesPage() {
-  const [messages, setMessages] = useState<MessageWithUser[]>([]);
+  const [messages, setMessages] = useState<AdminMessage[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [replyText, setReplyText] = useState<Record<string, string>>({});
   const [sending, setSending] = useState<string | null>(null);
-  const supabase = createClient();
 
-  const load = async () => {
-    const { data } = await supabase
-      .from("messages")
-      .select("*, user:profiles(full_name, email, avatar_url)")
-      .order("created_at", { ascending: false });
-    setMessages((data as MessageWithUser[]) ?? []);
-  };
+  const load = useCallback(async () => {
+    const res = await fetch("/api/messages", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    setMessages((data?.messages as AdminMessage[]) ?? []);
+  }, []);
 
-  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, [load]);
 
   const handleMarkRead = async (id: string) => {
-    await supabase.from("messages").update({ read: true }).eq("id", id);
+    await fetch(`/api/messages/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ read: true }),
+    });
     load();
   };
 
   const handleReply = async (id: string) => {
     if (!replyText[id]?.trim()) return;
     setSending(id);
-    await supabase.from("messages").update({
-      admin_reply: replyText[id],
-      read: true,
-      replied_at: new Date().toISOString(),
-    }).eq("id", id);
+    await fetch(`/api/messages/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ admin_reply: replyText[id] }),
+    });
     setReplyText((prev) => ({ ...prev, [id]: "" }));
     setSending(null);
     load();

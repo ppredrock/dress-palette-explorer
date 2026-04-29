@@ -33,3 +33,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local sqlite (used as Turso fallback in dev)
+/local.db
+/local.db-journal
